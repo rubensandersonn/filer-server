@@ -55,6 +55,7 @@ server.get("/", (req, res) => {
 server.post("/uploadagua", upload.uploadAgua);
 server.post("/uploadgas", upload.uploadGas);
 server.post("/uploadesgoto", upload.uploadEsgoto);
+server.post("/uploadviario", upload.uploadViario);
 
 server.listen(process.env.PORT || 8000, () => {
   console.log("Server started!");

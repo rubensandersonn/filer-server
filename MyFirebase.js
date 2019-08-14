@@ -51,3 +51,20 @@ exports.updateRedeEsgoto = rede => {
       });
   });
 };
+
+exports.updateRedeViario = rede => {
+  return new Promise(resolve => {
+    firebase
+      .database()
+      .ref("viario")
+      .set({ rede: rede.features })
+      .then(res => {
+        console.log("viario atualizado");
+        resolve(true);
+      })
+      .catch(err => {
+        console.log("erro ao atualizar sistema viario: ", err);
+        resolve(false);
+      });
+  });
+};
