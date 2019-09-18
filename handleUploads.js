@@ -53,8 +53,8 @@ exports.handleUploads = function(req, res, tipo_rede) {
                   .then(rede => {
                     // === upload on firebase ===
                     console.log("shapefiles processados");
-                    // uploadByTypeOnFirebase(rede, tipo_rede)
-                    uploadTest(rede, tipo_rede)
+
+                    uploadByTypeOnFirebase(rede, tipo_rede)
                       .then(resultado => {
                         res.send({ status: 200 });
                       })
@@ -96,8 +96,8 @@ exports.handleUploads = function(req, res, tipo_rede) {
 
             if (rede) {
               // === salvando dados no firebase ===
-              // uploadByTypeOnFirebase(rede, tipo_rede)
-              uploadTest(rede, tipo_rede)
+
+              uploadByTypeOnFirebase(rede, tipo_rede)
                 .then(resultado => {
                   fs.writeFile(pathfile, JSON.stringify(rede), err => {
                     if (err) console.log(err);
