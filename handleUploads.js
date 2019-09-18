@@ -15,19 +15,17 @@ exports.handleUploads = function(req, res, tipo_rede) {
   });
 
   form.on("fileBegin", function(name, file) {
-    const pathfile = path.join(__dirname, "files", tipo_rede, file.name);
     if (file && file.name && getFileType(file.name)) {
-      // criando o diretorio caso nao exista
-
-      // file.path = pathfile;
       console.log("path do arquivo que chegou", file.path);
     }
   });
 
   form.on("file", (type, file) => {
-    const pathfolder = path.join(__dirname, "files", tipo_rede);
+    const pathfolder = path.join(__dirname, "files_result", tipo_rede);
+    const pathfile = path.join(__dirname, "files_result", tipo_rede, file.name);
 
     if (file) {
+      // === === === ===
       console.log("Arquivo Rede", tipo_rede, "no servidor:", file.path);
 
       switch (getFileType(file.name)) {
@@ -55,8 +53,11 @@ exports.handleUploads = function(req, res, tipo_rede) {
                   .then(rede => {
                     // === upload on firebase ===
                     console.log("shapefiles processados");
-                    uploadByTypeOnFirebase(rede, tipo_rede)
-                      .then(resultado => res.send({ status: 200 }))
+                    // uploadByTypeOnFirebase(rede, tipo_rede)
+                    uploadTest(rede, tipo_rede)
+                      .then(resultado => {
+                        res.send({ status: 200 });
+                      })
                       .catch(err => {
                         console.log("ERRO no firebase:", err);
                         // service unnavailable
@@ -87,12 +88,21 @@ exports.handleUploads = function(req, res, tipo_rede) {
               res.send({ status: 400 });
             }
 
+            // removing old files
+            removeOldFiles(pathfolder);
+
+            // parsing data to json
             var rede = JSON.parse(raw);
 
             if (rede) {
               // === salvando dados no firebase ===
-              uploadByTypeOnFirebase(rede, tipo_rede)
+              // uploadByTypeOnFirebase(rede, tipo_rede)
+              uploadTest(rede, tipo_rede)
                 .then(resultado => {
+                  fs.writeFile(pathfile, JSON.stringify(rede), err => {
+                    if (err) console.log(err);
+                    console.log("Successfully Written to File.");
+                  });
                   res.send({ status: 200 });
                 })
                 .catch(err => {
@@ -188,6 +198,12 @@ const getFileType = filename => {
   }
 };
 
+const uploadTest = (rede, type) => {
+  return new Promise((resolve, reject) => {
+    resolve(true);
+  });
+};
+
 // === === === ===
 
 const uploadByTypeOnFirebase = (rede, type) => {
@@ -265,3 +281,27 @@ const findShp = dirpath => {
   }
   return null;
 };
+
+function copyFile(source, target, cb) {
+  var cbCalled = false;
+
+  var rd = fs.createReadStream(source);
+  rd.on("error", function(err) {
+    done(err);
+  });
+  var wr = fs.createWriteStream(target);
+  wr.on("error", function(err) {
+    done(err);
+  });
+  wr.on("close", function(ex) {
+    done();
+  });
+  rd.pipe(wr);
+
+  function done(err) {
+    if (!cbCalled) {
+      cb(err);
+      cbCalled = true;
+    }
+  }
+}

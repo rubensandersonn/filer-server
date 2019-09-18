@@ -18,10 +18,18 @@ server.post("/uploadgas", (req, res) => handleUploads(req, res, "gas"));
 server.post("/uploadesgoto", (req, res) => handleUploads(req, res, "esgoto"));
 server.post("/uploadviario", (req, res) => handleUploads(req, res, "viario"));
 
-server.get("/downloadagua", download.downloadRedeAgua);
-server.get("/downloadgas", download.downloadRedeGas);
-server.get("/downloadesgoto", download.downloadRedeEsgoto);
-server.get("/downloadviario", download.downloadRedeViario);
+server.get("/downloadagua", (req, res) =>
+  download.downloadFile(req, res, "agua")
+);
+server.get("/downloadgas", (req, res) =>
+  download.downloadFile(req, res, "gas")
+);
+server.get("/downloadesgoto", (req, res) =>
+  download.downloadFile(req, res, "esgoto")
+);
+server.get("/downloadviario", (req, res) =>
+  download.downloadFile(req, res, "viario")
+);
 
 server.listen(process.env.PORT || 8000, () => {
   console.log(
